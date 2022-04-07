@@ -11,7 +11,6 @@ import { setEnableAppLock } from '../../store/reducers/settings';
 import { setBoardingCompleted, unlock } from '../../store/reducers/status';
 import { updateWallet, updateWallets } from '../../store/reducers/wallet';
 import { backgroundClass, backgroundMethod } from '../decorators';
-import { delay } from '../utils';
 
 import ServiceBase from './ServiceBase';
 
@@ -26,9 +25,6 @@ class ServiceApp extends ServiceBase {
     await persistor.purge();
     await engine.resetApp();
     dispatch({ type: 'LOGOUT', payload: undefined });
-    await delay(300);
-    await this.initNetworks();
-    await delay(300);
     serviceNetwork.notifyChainChanged();
     serviceAccount.notifyAccountsChanged();
   }

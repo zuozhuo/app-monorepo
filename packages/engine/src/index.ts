@@ -186,8 +186,8 @@ class Engine {
         }
       }
 
-      // add default token
-      await this.addDefaultToken();
+      // add default token in background
+      this.addDefaultToken();
 
       const context = await this.dbApi.getContext();
       if (
@@ -934,23 +934,29 @@ class Engine {
       // filter for account
       networkIds = networkIds.filter((v) => getImplFromNetworkId(v) === impl);
     }
-    for (const networkId of networkIds) {
-      for (const tokenIdOnNetwork of tokens[networkId]) {
-        try {
-          if (accountId && impl) {
-            // add for account
-            await this.addTokenToAccount(
-              accountId,
-              `${networkId}--${tokenIdOnNetwork}`,
-            );
-          } else {
-            await this.getOrAddToken(networkId, tokenIdOnNetwork);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    }
+    await Promise.all(
+      networkIds.reduce(
+        (waitingList: Array<Promise<void>>, networkId) =>
+          waitingList.concat(
+            tokens[networkId].map(async (tokenIdOnNetwork) => {
+              try {
+                const token = await this.getOrAddToken(
+                  networkId,
+                  tokenIdOnNetwork,
+                );
+                if (typeof token === 'undefined') {
+                  console.error('Token not added', networkId, tokenIdOnNetwork);
+                } else if (accountId && impl) {
+                  await this.addTokenToAccount(accountId, token.id);
+                }
+              } catch (e) {
+                console.error(e);
+              }
+            }),
+          ),
+        [],
+      ),
+    );
   }
 
   @backgroundMethod()
