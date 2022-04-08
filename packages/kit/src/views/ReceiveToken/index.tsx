@@ -15,6 +15,7 @@ import {
   Typography,
   useThemeValue,
 } from '@onekeyhq/components';
+import qrcodeLogo from '@onekeyhq/kit/assets/qrcode_logo.png';
 
 import { useToast } from '../../hooks/useToast';
 import { copyToClipboard } from '../../utils/ClipboardUtils';
@@ -60,14 +61,20 @@ const ReceiveToken = () => {
 
                 <Box
                   mt="16px"
-                  padding="16px"
-                  borderWidth="1px"
-                  borderRadius="12px"
-                  bgColor="surface-default"
-                  borderColor={borderColor}
-                  width="192px"
+                  borderRadius="3xl"
+                  bgColor="white"
+                  p={6}
+                  shadow="depth.4"
                 >
-                  <QRCode value={address} size={160} />
+                  <QRCode
+                    value={address}
+                    size={160}
+                    logo={qrcodeLogo}
+                    logoSize={48}
+                    logoMargin={8}
+                    logoBorderRadius={12.8}
+                    logoBackgroundColor="white"
+                  />
                 </Box>
               </Box>
               <Row
